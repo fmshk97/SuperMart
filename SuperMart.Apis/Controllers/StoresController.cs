@@ -97,7 +97,7 @@ namespace SuperMart.Apis.Controllers
 
             if (storeName.ToLower() != store.StoreName.ToLower())
             {
-                return RedirectPermanent("");
+                return BadRequest("Failed to update store details. Store name does not match with the name in the updated details.");
             }
 
             var storeDetails = await _storesRepository.GetStoreAsync(store.StoreName);
@@ -152,6 +152,14 @@ namespace SuperMart.Apis.Controllers
                 return BadRequest(errorMessage);
             }
 
+            var store = await _storesRepository.GetStoreAsync(storeName);
+            if (store == null)
+            {
+                var errorMessage = $"Store '{storeName}' not found.";
+                _logger.LogError(errorMessage);
+                return NotFound(errorMessage);
+            }
+
             (var productDal, var elapsedTime) = await _productsRepository.GetAllStoreProductsAsync(storeName);
             var products = productDal.Select(product => product.ToOutputModel());
 
@@ -184,9 +192,9 @@ namespace SuperMart.Apis.Controllers
             var isRegistered = await _storesRepository.StoreExistsAsync(storeName);
             if (!isRegistered)
             {
-                var errorMessage = $"Store '{storeName}' is not registered.";
+                var errorMessage = $"Store '{storeName}' not found.";
                 _logger.LogError(errorMessage);
-                return BadRequest(errorMessage);
+                return NotFound(errorMessage);
             }
 
             var product = await _productsRepository.GetProductAsync(storeName, productInput.Name);
