@@ -10,7 +10,7 @@ namespace Assignment.Dal.Repositories
         Task RegisterStoreAsync(Store store);
         Task RemoveStoreAsync(string storeName);
         Task<bool> StoreExistsAsync(string storeName);
-        Task<IEnumerable<Store>> GetAllStoresAsync();
+        Task<(IEnumerable<Store>, long)> GetAllStoresAsync();
         Task UpdateStoreAsync(Store store);
     }
 }

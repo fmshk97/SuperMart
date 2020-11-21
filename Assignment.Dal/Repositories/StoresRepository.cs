@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,8 +24,7 @@ namespace Assignment.Dal.Repositories
         {
             if (store == null)
             {
-                _logger.LogInformation($"Failed to register the store. Invalid store details.");
-                return;
+                throw new ArgumentNullException("Store should not be null.");
             }
 
             try
@@ -44,16 +44,21 @@ namespace Assignment.Dal.Repositories
         {
             if (string.IsNullOrWhiteSpace(storeName))
             {
+                _logger.LogError("Store name not specified.");
                 return;
             }
 
             try
             {
-                var store = await _context.Stores.FirstOrDefaultAsync(x => x.StoreName == storeName);
+                var store = await _context.Stores
+                    .FirstOrDefaultAsync(x => x.StoreName.ToLower() == storeName.ToLower());
+                
                 if (store == null)
                 {
                     _logger.LogWarning($"Store with name '{storeName}' doesn't exist.");
+                    return;
                 }
+
                 _context.Stores.Remove(store);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation($"Store with name '{storeName}' removed successfully.");
@@ -69,6 +74,7 @@ namespace Assignment.Dal.Repositories
         {
             if (string.IsNullOrWhiteSpace(storeName))
             {
+                _logger.LogError("Store name not specified.");
                 return false;
             }
 
@@ -89,15 +95,25 @@ namespace Assignment.Dal.Repositories
         {
             if (string.IsNullOrWhiteSpace(storeName))
             {
+                _logger.LogError("Store name not specified.");
                 return null;
             }
 
             try
             {
-                return await _context.Stores.Include(store => store.Products)
+                var store = await _context.Stores.Include(store => store.Products)
                                             .Where(store => store.StoreName.ToLower() == storeName.ToLower())
                                             .AsNoTracking()
                                             .FirstOrDefaultAsync();
+
+                if (store == null)
+                {
+                    _logger.LogWarning($"Store '{storeName}' not found in the database.");
+                    return null;
+                }
+
+                _logger.LogInformation($"Store details for '{storeName}' fetched from the database.");
+                return store;
             }
             catch (Exception ex)
             {
@@ -106,13 +122,19 @@ namespace Assignment.Dal.Repositories
             }
         }
 
-        public async Task<IEnumerable<Store>> GetAllStoresAsync()
+        public async Task<(IEnumerable<Store>, long)> GetAllStoresAsync()
         {
             try
             {
-                return await _context.Stores.Include(store => store.Products)
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                var stores = await _context.Stores.Include(store => store.Products)
                                             .AsNoTracking()
                                             .ToListAsync();
+                stopwatch.Stop();
+
+                _logger.LogInformation($"{stores.Count} store records fetched from the database in {stopwatch.ElapsedMilliseconds} ms.");
+                return (stores, stopwatch.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
@@ -125,6 +147,7 @@ namespace Assignment.Dal.Repositories
         {
             if (store == null)
             {
+                _logger.LogError("Store not specified.");
                 return;
             }
 
@@ -137,6 +160,7 @@ namespace Assignment.Dal.Repositories
                     storeDetails.Country = store.Country;
                     storeDetails.Pin = store.Pin;
                     await _context.SaveChangesAsync();
+                    _logger.LogInformation($"Successfully updated details for the store '{store.StoreName}'");
                 }
                 else
                 {
