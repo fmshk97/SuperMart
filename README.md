@@ -1,8 +1,8 @@
 # SuperMart Backend Service
 
-Backend system for SuperMart. <br>
-SuperMart is a platform for stores to maintain and manage their products.
-It also allows customers to search products. <br>
+Backend service for SuperMart. <br>
+SuperMart backend service allows managing stores and their products.
+It also allows to search products. <br>
 
 ## APIs
 
@@ -36,6 +36,9 @@ It also allows customers to search products. <br>
 
 ## Database
 MySQL 8.0 has been used for storing data.
+
+### EER Diagram
+![alt text](https://github.com/fmshk97/SuperMart/blob/master/Diagrams/EER-dig.png?raw=true)
 
 ## Security
 No security has been considered in this project. All the APIs have anonymous access.
