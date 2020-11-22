@@ -1,4 +1,4 @@
-# SuperMart Backend
+# SuperMart Backend Service
 
 Backend system for SuperMart. <br>
 SuperMart is a platform for stores to maintain and manage their products.
@@ -33,6 +33,9 @@ It also allows customers to search products. <br>
 - MySql.Data
 - MySql.Data.EntityFrameworkCore
 - Pomelo.EntityFrameworkCore.MySql
+
+## Database
+MySQL 8.0 has been used for storing data.
 
 ## Security
 No security has been considered in this project. All the APIs have anonymous access.
