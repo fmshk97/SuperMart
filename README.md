@@ -13,7 +13,7 @@ It also allows customers to search products. <br>
 - **/products** - Allows to GET details of all the products from all the stores.
 - **/products?searchText={search-text}** - Allows to search products by product name (GET). <br>
 
-### API Input Constraints (Validations already in place)
+### API Input Constraints (Validations in place)
 - Store name must be unique
 - Product name must be unique for a given store
 
@@ -33,3 +33,9 @@ It also allows customers to search products. <br>
 - MySql.Data
 - MySql.Data.EntityFrameworkCore
 - Pomelo.EntityFrameworkCore.MySql
+
+## Security
+No security has been considered in this project. All the APIs have anonymous access.
+
+## Testing
+No unit or integration tests are currently present in the project.
