@@ -69,8 +69,8 @@ namespace SuperMart.Apis.Controllers
                 return BadRequest(errorMessage);
             }
 
-            var storeDetails = await _storesRepository.GetStoreAsync(storeInput.StoreName);
-            if (storeDetails != null)
+            var exists = await _storesRepository.StoreExistsAsync(storeInput.StoreName);
+            if (exists)
             {
                 var errorMessage = $"Store with name '{storeInput.StoreName}' already registered. Register with a different store name.";
                 _logger.LogInformation(errorMessage);
@@ -197,8 +197,8 @@ namespace SuperMart.Apis.Controllers
                 return NotFound(errorMessage);
             }
 
-            var product = await _productsRepository.GetProductAsync(storeName, productInput.Name);
-            if (product != null)
+            var exists = await _productsRepository.ProductExistsAsync(storeName, productInput.Name);
+            if (exists)
             {
                 var errorMessage = $"Product '{productInput.Name}' already exists in the store '{storeName}'.";
                 _logger.LogError(errorMessage);
@@ -230,8 +230,8 @@ namespace SuperMart.Apis.Controllers
                 return BadRequest(errorMessage);
             }
 
-            var product = await _productsRepository.GetProductAsync(storeName, productName);
-            if (product == null)
+            var exists = await _productsRepository.ProductExistsAsync(storeName, productName);
+            if (!exists)
             {
                 var errorMessage = $"Product '{productName}' not found in the store '{storeName}'.";
                 _logger.LogError(errorMessage);
@@ -241,6 +241,36 @@ namespace SuperMart.Apis.Controllers
             await _productsRepository.RemoveProductAsync(storeName, productName);
             _logger.LogInformation($"Successfully removed product '{productName}' from store '{storeName}'.");
             return NoContent();
+        }
+
+        [HttpGet]
+        [Route("{storeName}/products/{productName}")]
+        public async Task<IActionResult> GetProductFromStoreAsync([FromRoute] string storeName, [FromRoute] string productName)
+        {
+            if (string.IsNullOrWhiteSpace(storeName))
+            {
+                var errorMessage = "Invalid store name provided.";
+                _logger.LogError(errorMessage);
+                return BadRequest(errorMessage);
+            }
+
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                var errorMessage = "Invalid product name provided.";
+                _logger.LogError(errorMessage);
+                return BadRequest(errorMessage);
+            }
+
+            var product = await _productsRepository.GetProductAsync(storeName, productName);
+            if (product == null)
+            {
+                var errorMessage = $"Product '{productName}' not found in the store '{storeName}'.";
+                _logger.LogError(errorMessage);
+                return NotFound(errorMessage);
+            }
+
+            _logger.LogInformation($"Successfully fetched product '{productName}' from store '{storeName}'.");
+            return Ok(product.ToOutputModel());
         }
     }
 }

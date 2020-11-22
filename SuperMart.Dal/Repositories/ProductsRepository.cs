@@ -54,6 +54,35 @@ namespace SuperMart.Dal.Repositories
             }
         }
 
+        public async Task<bool> ProductExistsAsync(string storeName, string productName)
+        {
+            if (string.IsNullOrWhiteSpace(storeName))
+            {
+                _logger.LogError("Store name not specified.");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                _logger.LogError("Product name not specified.");
+                return false;
+            }
+
+            try
+            {
+                var exists = await _context.Products
+                    .Include(product => product.Store)
+                    .AnyAsync(product =>
+                                product.Store.StoreName.ToLower() == storeName.ToLower() &&
+                                product.Name.ToLower() == productName.ToLower());
+                return exists;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to search product '{productName}' in store '{storeName}'. Details: {ex.Message}");
+                throw;
+            }
+        }
+
         public async Task<Product> GetProductAsync(string storeName, string productName)
         {
             if (string.IsNullOrWhiteSpace(storeName))
@@ -110,7 +139,7 @@ namespace SuperMart.Dal.Repositories
                 else
                 {
                     products = await _context.Products
-                        .Where(product => product.Name.ToLower().StartsWith(searchText.ToLower()))
+                        .Where(product => product.Name.ToLower().Contains(searchText.ToLower()))
                         .Include(product => product.Store)
                         .AsNoTracking()
                         .ToListAsync();

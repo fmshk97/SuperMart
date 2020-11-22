@@ -55,7 +55,7 @@ namespace SuperMart.Dal.Repositories
                 
                 if (store == null)
                 {
-                    _logger.LogWarning($"Store with name '{storeName}' doesn't exist.");
+                    _logger.LogError($"Store with name '{storeName}' doesn't exist.");
                     return;
                 }
 
@@ -86,7 +86,7 @@ namespace SuperMart.Dal.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to fetch store with name '{storeName}'. Details: {ex.Message}");
+                _logger.LogError($"Failed to search store '{storeName}'. Details: {ex.Message}");
                 throw;
             }
         }
@@ -108,7 +108,7 @@ namespace SuperMart.Dal.Repositories
 
                 if (store == null)
                 {
-                    _logger.LogWarning($"Store '{storeName}' not found in the database.");
+                    _logger.LogError($"Store '{storeName}' not found in the database.");
                     return null;
                 }
 
