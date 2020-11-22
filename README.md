@@ -1,8 +1,8 @@
 # SuperMart Backend Service
 
-Backend system for SuperMart. <br>
-SuperMart is a platform for stores to maintain and manage their products.
-It also allows customers to search products. <br>
+Backend service for SuperMart. <br>
+SuperMart backend service allows managing stores and their products.
+It also allows to search products. <br>
 
 ## APIs
 
