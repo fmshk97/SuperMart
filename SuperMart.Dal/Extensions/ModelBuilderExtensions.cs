@@ -16,6 +16,8 @@ namespace SuperMart.Dal.Extensions
                 store.Property(x => x.Country).IsRequired();
                 store.Property(x => x.Pin).IsRequired();
                 store.Property(x => x.JoinedOn).IsRequired();
+
+                store.HasIndex(s => s.StoreName).IsUnique();
                 
                 store.HasMany(x => x.Products).WithOne(x => x.Store)
                     .IsRequired()
@@ -34,6 +36,8 @@ namespace SuperMart.Dal.Extensions
                 product.Property(x => x.Price).IsRequired();
                 product.Property(x => x.Category).IsRequired();
                 product.Property(x => x.AddedOn).IsRequired();
+
+                product.HasIndex("StoreId", nameof(Product.Name)).IsUnique();
             });
         }
     }
