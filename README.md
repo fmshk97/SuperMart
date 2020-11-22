@@ -37,6 +37,9 @@ It also allows customers to search products. <br>
 ## Database
 MySQL 8.0 has been used for storing data.
 
+### EER Diagram
+![alt text](https://github.com/fmshk97/SuperMart/blob/master/Diagrams/EER-dig.png?raw=true)
+
 ## Security
 No security has been considered in this project. All the APIs have anonymous access.
 
